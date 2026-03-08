@@ -1,5 +1,6 @@
 import { LEVEL_IDS, LEVELS, NOTES_PER_RUN_OPTIONS } from '../constants';
 import type { LevelId } from '../types';
+import { Select } from './Select';
 
 interface TrainerControlsProps {
   currentLevel: LevelId;
@@ -8,6 +9,16 @@ interface TrainerControlsProps {
   onNotesPerRunChange: (notesPerRun: number) => void;
 }
 
+const LEVEL_OPTIONS = LEVEL_IDS.map((id) => ({
+  value: id,
+  label: LEVELS[id].name,
+}));
+
+const NOTES_OPTIONS = NOTES_PER_RUN_OPTIONS.map((n) => ({
+  value: n,
+  label: `${n} ${n === 1 ? 'Note' : 'Notes'}`,
+}));
+
 export function TrainerControls({
   currentLevel,
   notesPerRun,
@@ -15,40 +26,21 @@ export function TrainerControls({
   onNotesPerRunChange,
 }: TrainerControlsProps) {
   return (
-    <section className="flex flex-col gap-5 rounded-xl border border-slate-200 bg-white p-6 shadow">
-      <div>
-        <h2 className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">
-          Trainer Level
-        </h2>
-        <select
-          value={currentLevel}
-          onChange={(event) => onLevelChange(Number(event.target.value) as LevelId)}
-          className="w-full rounded-lg border border-slate-300 bg-slate-50 p-2.5 font-medium text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
-        >
-          {LEVEL_IDS.map((levelId) => (
-            <option key={levelId} value={levelId}>
-              {LEVELS[levelId].name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <h2 className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">
-          Sequence Length
-        </h2>
-        <select
-          value={notesPerRun}
-          onChange={(event) => onNotesPerRunChange(Number(event.target.value))}
-          className="w-full rounded-lg border border-slate-300 bg-slate-50 p-2.5 font-medium text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
-        >
-          {NOTES_PER_RUN_OPTIONS.map((option) => (
-            <option key={option} value={option}>
-              {option} {option === 1 ? 'Note' : 'Notes'}
-            </option>
-          ))}
-        </select>
-      </div>
+    <section className="flex flex-col gap-5 rounded-xl border border-slate-200 bg-white p-6 shadow dark:border-slate-600/60 dark:bg-slate-800/50 dark:shadow-none">
+      <Select
+        id="trainer-level"
+        label="Trainer Level"
+        options={LEVEL_OPTIONS}
+        value={currentLevel}
+        onChange={onLevelChange}
+      />
+      <Select
+        id="sequence-length"
+        label="Sequence Length"
+        options={NOTES_OPTIONS}
+        value={notesPerRun}
+        onChange={onNotesPerRunChange}
+      />
     </section>
   );
 }

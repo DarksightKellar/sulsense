@@ -1,5 +1,6 @@
 import { LEVELS } from '../constants';
 import { formatOrdinal, getTunerColor } from '../music';
+import { useTheme } from '../useTheme';
 import type { DisplaySequenceItem, LevelId, Mode, NoteObject } from '../types';
 
 const E4_STEP = 30;
@@ -45,20 +46,36 @@ export function Staff({
   sequence,
   hitFrames,
 }: StaffProps) {
+  const { theme } = useTheme();
   const position = LEVELS[currentLevel].position;
   const startX = 200 - ((sequence.length - 1) * NOTE_GAP) / 2;
 
+  const staffLineColor = theme === 'dark' ? '#f8fafc' : '#1e293b';
+  const defaultNoteColor = theme === 'dark' ? '#f8fafc' : '#0f172a';
+  const completedNoteColor = theme === 'dark' ? '#34d399' : '#10b981';
+  const inactiveNoteColor = theme === 'dark' ? '#475569' : '#cbd5e1';
+  const fingerColor = theme === 'dark' ? '#94a3b8' : '#475569';
+  const fingerStroke = theme === 'dark' ? '#020617' : '#ffffff';
+  const constraintCurrentColor = theme === 'dark' ? '#cbd5e1' : '#475569';
+  const constraintFutureColor = theme === 'dark' ? '#64748b' : '#cbd5e1';
+
   return (
-    <section className="relative flex h-full w-full items-center overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow sm:p-8">
+    <section className="relative flex h-full w-full items-center overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow dark:border-slate-600/60 dark:bg-slate-800/50 dark:shadow-none sm:p-8">
+
       {mode === 'trainer' && sequence.length > 0 ? (
         <div className="absolute top-4 left-6 z-10 flex flex-col transition-opacity duration-300 sm:top-6 sm:left-8">
-          <div className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1 font-sans text-xs font-bold uppercase tracking-wider text-slate-500 shadow-sm sm:text-sm">
+          <div className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1 font-sans text-xs font-bold uppercase tracking-[0.16em] text-slate-500 shadow-sm dark:border-slate-600/80 dark:bg-slate-950/70 dark:text-slate-300/85 sm:text-sm">
             {formatOrdinal(position)} Position
           </div>
         </div>
       ) : null}
 
-      <svg width="100%" height="100%" viewBox="0 -150 400 350" className="mx-auto">
+      <svg
+        width="100%"
+        height="100%"
+        viewBox="0 -150 400 350"
+        className="relative z-1 mx-auto"
+      >
         {[0, 1, 2, 3, 4].map((index) => (
           <line
             key={index}
@@ -66,7 +83,7 @@ export function Staff({
             y1={20 + index * STAFF_LINE_GAP}
             x2="370"
             y2={20 + index * STAFF_LINE_GAP}
-            stroke="#1e293b"
+            stroke={staffLineColor}
             strokeWidth="2"
           />
         ))}
@@ -76,7 +93,7 @@ export function Staff({
           y="60"
           fontSize="120"
           fontFamily="serif"
-          fill="#1e293b"
+          fill={staffLineColor}
           dominantBaseline="central"
           textAnchor="middle"
         >
@@ -90,20 +107,20 @@ export function Staff({
           const isActiveNote = mode === 'trainer' && index === activeIndex;
           const isCompletedNote = mode === 'trainer' && index < activeIndex;
 
-          let noteColor = '#0f172a';
-          let fingerColor = '#475569';
+          let noteColor = defaultNoteColor;
+          let fingerTextColor = fingerColor;
           let scaleValue = 1;
 
           if (mode === 'trainer') {
             if (isCompletedNote) {
-              noteColor = '#10b981';
+              noteColor = completedNoteColor;
             } else if (isActiveNote) {
               noteColor =
-                liveNote?.midi === item.noteObj.midi ? getTunerColor(cents) : '#0f172a';
+                liveNote?.midi === item.noteObj.midi ? getTunerColor(cents) : defaultNoteColor;
               scaleValue = 1.15;
             } else {
-              noteColor = '#cbd5e1';
-              fingerColor = '#cbd5e1';
+              noteColor = inactiveNoteColor;
+              fingerTextColor = inactiveNoteColor;
             }
           } else {
             noteColor = getTunerColor(cents);
@@ -129,7 +146,7 @@ export function Staff({
                   y1={lineY - noteY}
                   x2={18}
                   y2={lineY - noteY}
-                  stroke="#1e293b"
+                  stroke={staffLineColor}
                   strokeWidth="2"
                 />
               ))}
@@ -155,8 +172,8 @@ export function Staff({
                   fontSize="18"
                   fontFamily="serif"
                   fontWeight="bold"
-                  fill={fingerColor}
-                  stroke="white"
+                  fill={fingerTextColor}
+                  stroke={fingerStroke}
                   strokeWidth="4"
                   paintOrder="stroke"
                 >
@@ -173,7 +190,7 @@ export function Staff({
                   fontStyle="italic"
                   fontFamily="serif"
                   fontWeight="bold"
-                  fill={index > activeIndex ? '#cbd5e1' : '#475569'}
+                  fill={index > activeIndex ? constraintFutureColor : constraintCurrentColor}
                 >
                   {constraintLabel}
                 </text>
@@ -184,9 +201,9 @@ export function Staff({
       </svg>
 
       {mode === 'trainer' ? (
-        <div className="absolute right-0 bottom-0 left-0 h-3 overflow-hidden bg-slate-100">
+        <div className="absolute right-0 bottom-0 left-0 h-3 overflow-hidden bg-slate-100 dark:bg-slate-900/80">
           <div
-            className="h-full bg-emerald-500 transition-all duration-100 ease-linear"
+            className="h-full bg-emerald-500 transition-all duration-100 ease-linear dark:bg-emerald-500"
             style={{ width: `${(hitFrames / 5) * 100}%` }}
           />
         </div>

@@ -1,4 +1,5 @@
 import { Mic, MicOff, Music } from 'lucide-react';
+import { ThemeToggle } from './components/ThemeToggle';
 import { startTransition, useCallback, useEffect, useRef, useState } from 'react';
 import { IN_TUNE_CENTS_THRESHOLD } from './constants';
 import { generateSequence } from './sequence';
@@ -162,26 +163,31 @@ export default function SulSenseApp() {
   const displayPianoNote = mode === 'explorer' ? liveNote : targetSequence[activeIndex]?.noteObj ?? null;
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 text-slate-800 md:p-6">
+    <div className="min-h-screen bg-transparent p-4 text-slate-800 md:p-6 dark:text-slate-100">
       <div className="mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-5xl flex-col md:min-h-[calc(100vh-3rem)]">
-        <header className="mb-6 flex w-full flex-shrink-0 flex-col items-center justify-between gap-4 md:flex-row">
+        <header className="mb-6 flex w-full shrink-0 flex-col items-center justify-between gap-4 md:flex-row">
           <div>
-            <h1 className="flex items-center gap-2 text-3xl font-bold text-slate-900">
-              <Music className="h-8 w-8 text-blue-600" />
+            <h1 className="flex items-center gap-2 text-3xl font-bold tracking-tight text-slate-900 dark:font-black dark:text-slate-50">
+              <Music className="h-8 w-8 text-blue-600 dark:text-slate-400" />
               SulSense
             </h1>
-            <p className="mt-1 text-sm text-slate-500">Incremental Fingerboard Internalization</p>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-300/80">
+              Incremental Fingerboard Internalization
+            </p>
           </div>
 
-          <ModeToggle mode={mode} onChange={handleModeChange} />
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <ModeToggle mode={mode} onChange={handleModeChange} />
+          </div>
 
           <button
             type="button"
             onClick={toggleListening}
-            className={`flex items-center gap-2 rounded-full px-6 py-3 font-bold text-white shadow-md transition-all ${
+            className={`flex items-center gap-2 rounded-full px-6 py-3 font-bold text-white! shadow-md transition-colors ${
               isListening
-                ? 'bg-red-500 hover:bg-red-600'
-                : 'bg-emerald-500 hover:bg-emerald-600'
+                ? 'bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
+                : 'bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700'
             }`}
           >
             {isListening ? (
@@ -198,8 +204,8 @@ export default function SulSenseApp() {
           </button>
         </header>
 
-        <main className="flex w-full min-h-0 flex-grow flex-col gap-6">
-          <div className="grid flex-grow grid-cols-1 gap-6 min-h-0 lg:grid-cols-3">
+        <main className="flex w-full min-h-0 grow flex-col gap-6">
+          <div className="grid grow grid-cols-1 gap-6 min-h-0 lg:grid-cols-3">
             <div className="flex flex-col gap-6 lg:col-span-1">
               <PitchPanel
                 cents={cents}
@@ -217,11 +223,11 @@ export default function SulSenseApp() {
               />
             </div>
 
-            <div className="flex min-h-[350px] flex-col space-y-2 lg:col-span-2">
-              <div className="flex-shrink-0 text-center text-sm font-bold uppercase tracking-widest text-slate-500">
+            <div className="flex min-h-87.5 flex-col space-y-2 lg:col-span-2">
+              <div className="shrink-0 text-center text-sm font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-300/80">
                 {mode === 'explorer' ? 'Explorer Visualization' : 'Trainer Target Sequence'}
               </div>
-              <div className="flex-grow">
+              <div className="grow">
                 <Staff
                   activeIndex={displayIndex}
                   cents={cents}
@@ -235,8 +241,8 @@ export default function SulSenseApp() {
             </div>
           </div>
 
-          <section className="mt-auto w-full flex-shrink-0 space-y-2 pt-4">
-            <div className="text-center text-sm font-bold uppercase tracking-widest text-slate-500">
+          <section className="mt-auto w-full shrink-0 space-y-2 pt-4">
+            <div className="text-center text-sm font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-300/80">
               Piano Reference
             </div>
             <Piano targetNote={displayPianoNote} />
