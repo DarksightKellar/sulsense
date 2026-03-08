@@ -22,13 +22,13 @@ interface StaffProps {
 function getLedgerLinePositions(noteY: number) {
   const lines: number[] = [];
 
-  if (noteY > 120) {
+  if (noteY >= 120) {
     for (let position = 120; position <= noteY; position += STAFF_LINE_GAP) {
       lines.push(position);
     }
   }
 
-  if (noteY < 0) {
+  if (noteY <= 0) {
     for (let position = 0; position >= noteY; position -= STAFF_LINE_GAP) {
       lines.push(position);
     }
